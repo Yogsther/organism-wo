@@ -1,4 +1,4 @@
-![sh.png]()
+![sh.png](sh.png)
 
 Check it out https://github.com/Yogsther/organism-wo
 
