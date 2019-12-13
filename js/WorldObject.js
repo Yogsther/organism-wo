@@ -20,7 +20,7 @@ class WorldObject {
 
 class Food extends WorldObject {
 	constructor(x, y) {
-		super(TYPES.food, x, y, "#f00");
+		super(TYPES.food, x, y, "#f40");
 	}
 }
 
@@ -40,10 +40,12 @@ class Creature extends WorldObject {
 		this.name = `${randomIndex(FIRST_NAMES)} ${randomIndex(LAST_NAMES)}`;
 		this.direction = 0;
 		this.alive = true;
-		this.speed = 1;
+		this.speed = Math.random() * 10;
 		this.target = false;
 		this.nextDirection = 0;
-		this.turnSpeed = 20;
+		this.turnSpeed = Math.round(Math.random() * 100);
+		this.turnFrequency = Math.floor(Math.random() * 100);
+		this.placement = 0;
 		this.visionRange = 100;
 		this.stats = {
 			food: 100,
@@ -67,7 +69,7 @@ class Creature extends WorldObject {
 				Math.PI;
 		} else {
 			if (frame % 100 == 0) {
-				if (Math.random() > 0.1) {
+				if (Math.random() < this.turnSpeed / 100) {
 					this.nextDirection = Math.random() * 360;
 				}
 			}
@@ -155,7 +157,7 @@ class Creature extends WorldObject {
 			10
 		);
 		drawRect(
-			"#0f0",
+			"#f40",
 			this.x + TILE_WIDTH / 2 - foodMeter / 2,
 			this.y - 15,
 			foodMeter,
@@ -175,6 +177,12 @@ class Creature extends WorldObject {
 			1
 		);
 
-		drawText(this.name, this.x + TILE_WIDTH / 2, this.y - 15, 12);
+		drawText(
+			this.name,
+			this.x + TILE_WIDTH / 2,
+			this.y - 15,
+			12,
+			this.placement == 0 ? "gold" : "#fff"
+		);
 	}
 }
