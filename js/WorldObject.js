@@ -2,13 +2,14 @@ class WorldObject {
 	constructor(type, x, y, color = "white") {
 		this.x = x;
 		this.y = y;
+
+		this.alive = true;
+		this.lifetime = 0;
 		this.color = color;
 		this.type = type;
-		this.alive = true;
-		this.life = 0;
 	}
 
-	update() {}
+	update() { }
 
 	die() {
 		this.alive = false;
@@ -30,9 +31,7 @@ class Water extends WorldObject {
 	}
 }
 
-randomIndex = arr => {
-	return arr[Math.floor(Math.random() * arr.length)];
-};
+
 
 class Creature extends WorldObject {
 	constructor(x, y) {
@@ -52,21 +51,26 @@ class Creature extends WorldObject {
 			water: 100
 		};
 
-		this.life = 0;
+		this.max = {
+			food: 100,
+			water: 100
+		}
+
+		this.lifetime = 0;
+
+
 	}
 
 	update() {
-		this.life++;
+
+		this.lifetime++;
 		this.stats.water -= FOOD_COST_PER_FRAME;
 		this.stats.food -= FOOD_COST_PER_FRAME;
 
 		if (this.stats.water <= 0 || this.stats.food <= 0) this.die();
 
 		if (this.target) {
-			this.nextDirection =
-				(Math.atan2(this.target.y - this.y, this.target.x - this.x) *
-					180) /
-				Math.PI;
+			this.nextDirection = (Math.atan2(this.target.y - this.y, this.target.x - this.x) * 180) / Math.PI;
 		} else {
 			if (frame % 100 == 0) {
 				if (Math.random() < this.turnSpeed / 100) {
@@ -81,6 +85,8 @@ class Creature extends WorldObject {
 			if (this.nextDirection < this.direction)
 				this.direction -= this.turnSpeed;
 		}
+
+
 
 		// Movement
 		this.x += Math.cos(this.direction / (180 / Math.PI)) * this.speed;
@@ -99,28 +105,10 @@ class Creature extends WorldObject {
 			if (this.y < 0) this.y = canvas.height;
 		}
 
-		var objectsInVision = [];
-		for (let i = 0; i < world.length; i++) {
-			var obj = world[i];
 
-			if (obj.type == TYPES.food || obj.type == TYPES.water) {
-				var distance = Math.sqrt(
-					Math.pow(this.x - obj.x, 2) + Math.pow(this.y - obj.y, 2)
-				);
 
-				if (distance <= TILE_WIDTH) {
-					world.splice(i, 1);
+		var objectsInVision = this.getObjectsInVision();
 
-					this.stats[obj.type] += FOOD_POINTS;
-
-					if (this.stats[obj.type] > 100)
-						this.stats[obj.type] = FOOD_POINTS;
-				}
-
-				if (distance < this.visionRange)
-					objectsInVision.push({ distance, obj });
-			}
-		}
 
 		objectsInVision.sort((a, b) => {
 			return a.distance - b.distance;
@@ -134,18 +122,46 @@ class Creature extends WorldObject {
 			}
 		});
 
+
+
 		this.target =
 			objectsInVision.length > 0 ? objectsInVision[0].obj : false;
+
+
+	}
+
+	getObjectsInVision() {
+		let objInV = []
+		for (let i = 0; i < world.length; i++) {
+			var obj = world[i];
+
+			if (obj.type == TYPES.food || obj.type == TYPES.water) {
+				var distance = Math.sqrt(
+					Math.pow(this.x - obj.x, 2) + Math.pow(this.y - obj.y, 2)
+				);
+
+				if (distance <= TILE_WIDTH) {
+					world.splice(i, 1);
+
+					this.stats[obj.type] += FOOD_POINTS;
+
+					if (this.stats[obj.type] > this.max[obj.type]) this.stats[obj.type] = this.max[obj.type];
+				}
+
+				if (distance < this.visionRange) objInV.push({ distance, obj });
+			}
+		}
+		return objInV;
 	}
 
 	draw() {
 		// Draw character
 
-		drawCircle("#ffffff20", this.x, this.y, this.visionRange);
+		drawCircle("#ffffff08", this.x, this.y, this.visionRange);
 		draw(this.color, this.x, this.y, false, 1);
 
 		//stat bars
-		let maxMeter = FOOD_LIMIT / 4;
+		let maxMeter = this.max.food / 4;
 		let foodMeter = this.stats.food / 4;
 		let waterMeter = this.stats.water / 4;
 
