@@ -18,7 +18,8 @@ canvas.addEventListener("mousemove", e => {
         if (
             x < i.x + i.width && x > i.x &&
             y < i.y + i.height && y > i.y
-        ) i.highlight;
+        ) canvas.style.cursor = "pointer";
+        else canvas.style.cursor = "default";
     }
 })
 

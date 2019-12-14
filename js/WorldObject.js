@@ -39,11 +39,11 @@ class Creature extends WorldObject {
 		this.name = `${randomIndex(FIRST_NAMES)} ${randomIndex(LAST_NAMES)}`;
 		this.direction = 0;
 		this.alive = true;
-		this.speed = Math.random() * 10;
+		this.speed = Math.random() * 5;
 		this.target = false;
 		this.nextDirection = 0;
-		this.turnSpeed = Math.round(Math.random() * 100);
-		this.turnFrequency = Math.floor(Math.random() * 100);
+		this.turnSpeed = Math.round(Math.random() * 50);
+		this.turnFrequency = Math.floor(Math.random() * 50);
 		this.placement = 0;
 		this.visionRange = 100;
 		this.stats = {
