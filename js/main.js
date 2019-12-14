@@ -86,12 +86,6 @@ function logic() {
 	for (let i = 0; i < world.length; i++) {
 		let obj = world[i];
 		obj.update();
-		if (obj.type == TYPES.creature) {
-			//console.log(obj)
-			if (!obj.x) throw "position is fucked";
-		}
-
-
 		if (!obj.alive) world.splice(i, 1);
 	}
 
